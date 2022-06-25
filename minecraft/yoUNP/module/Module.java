@@ -80,7 +80,7 @@ public class Module {
         if (suffix.isEmpty()) {
             this.suffix = suffix;
         } else {
-            this.suffix = String.format("\u00a77- \u00a7f%s\u00a77", new Object[]{EnumChatFormatting.GRAY + suffix});
+            this.suffix = String.format(" %s", new Object[]{EnumChatFormatting.GRAY + suffix});
         }
 
     }

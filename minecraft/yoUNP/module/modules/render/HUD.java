@@ -1,32 +1,11 @@
 package yoUNP.module.modules.render;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Random;
-
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiIngame;
-import net.minecraft.client.gui.GuiNewChat;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.client.settings.GameSettings;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.ResourceLocation;
 import yoUNP.Client;
 import yoUNP.api.EventHandler;
 import yoUNP.api.events.rendering.EventRender2D;
@@ -36,11 +15,13 @@ import yoUNP.api.value.Option;
 import yoUNP.management.ModuleManager;
 import yoUNP.module.Module;
 import yoUNP.module.ModuleType;
-import yoUNP.module.modules.combat.Killaura;
 import yoUNP.ui.font.CFontRenderer;
 import yoUNP.ui.font.FontLoaders;
 import yoUNP.utils.render.ColorUtils;
 import yoUNP.utils.render.RenderUtil;
+
+import java.awt.*;
+import java.util.ArrayList;
 
 public class HUD extends Module {
 
@@ -51,19 +32,31 @@ public class HUD extends Module {
 	public Numbers<Double> g = new Numbers<Double>("Green", "Green", 255.0, 0.0, 255.0, 1.0);
 	public Numbers<Double> b = new Numbers<Double>("Blue", "Blue", 255.0, 0.0, 255.0, 1.0);
 	public Numbers<Double> alpha = new Numbers<Double>("Alpha", "Alpha", 0.0, 0.0, 255.0, 1.0);
+	public Numbers<Double> linewide = new Numbers<Double>("LineWide", "LineWide", 1.0, 0.5, 3.0, 0.5);
 	private static float x;
 	private static int y;
 	public static int ping;
 	float red;
 	float green;
 	float blue;
+	float lastx;
+	float lasty;
+	float lasty1 = 2.5f;
 
 	public HUD() {
-		super("HUD", new String[] { "gui" }, ModuleType.Render);
+		super("HUD", new String[]{"gui"}, ModuleType.Render);
 		this.setColor(new Color(random.nextInt(255), random.nextInt(255), random.nextInt(255)).getRGB());
 		this.setEnabled(true);
 		this.setRemoved(true);
-	this.addValues(this.mode, this.r, this.g, this.b, this.alpha, this.rainbow,this.suffix);
+
+
+		this.addValues(this.mode, this.r, this.g, this.b, this.alpha, this.linewide, this.rainbow, this.suffix);
+	}
+
+
+	@Override
+	public void onDisable() {
+		lasty1 = 2.5f;
 	}
 
 	@EventHandler
@@ -93,6 +86,7 @@ public class HUD extends Module {
 			sorted.sort((o1, o2) -> font1.getStringWidth(o2.getName()) - font1.getStringWidth( o1.getName()));
 		}
 		y = 5;
+		float lastlenth = 0;
 		for (Module m : sorted) {
 			if(suffix.getValue()) {
 				name = m.getSuffix().isEmpty() ? m.getName() : String.format("%s %s", m.getName(), m.getSuffix());
@@ -112,34 +106,31 @@ public class HUD extends Module {
 
 			float speedx=Math.abs(m.getAnimX() - font1.getStringWidth(name))/20;
 			float speedx1 = (speedx <0.05f ? 0.05f : speedx)*1.5f;
-			if(m==ModuleManager.getModuleByClass(Killaura.class) && speedx1>0.01f) {
-				//System.out.println(speedx);
-			}
 			if (m.getAnimX() < font1.getStringWidth(name) && m.isEnabled()) {
 				m.setAnimX(m.getAnimX() + speedx);
 			}
-			if (m.getAnimX() > -1 && !m.isEnabled()) {
+			if (m.getAnimX() > -1024 && !m.isEnabled()) {
 				m.setAnimX(m.getAnimX() - speedx1);
 			}
 			if (m.getAnimX() > font1.getStringWidth(name) && m.isEnabled()) {
 				m.setAnimX(font1.getStringWidth(name));
 			}
-			
 
-			if (m.getAnimY() < 10 && m.isEnabled()) {
-				m.setAnimY(m.getAnimY() + 0.4f);
+
+			if (m.getAnimY() < 12 && m.isEnabled()) {
+				m.setAnimY(m.getAnimY() + 0.3f);
 			}
-			if (m.getAnimY() !=0 && !m.isEnabled()&&m.getAnimX()<font1.getStringWidth(name)/2) {
-				m.setAnimY(m.getAnimY() - 0.4f);
+			if (m.getAnimY() != 0 && !m.isEnabled() && m.getAnimX() < font1.getStringWidth(name) / 2) {
+				m.setAnimY(m.getAnimY() - 0.3f);
 			}
-			if (m.getAnimY() > 10 && m.isEnabled()) {
-				m.setAnimY(10);
+			if (m.getAnimY() > 12 && m.isEnabled()) {
+				m.setAnimY(12);
 			}
 			if (m.getAnimY() < 0 && !m.isEnabled()) {
 				m.setAnimY(0);
 			}
 			x = RenderUtil.width() - m.getAnimX() - 2.5f;
-			float y1=m.getAnimY();
+			float y1 = m.getAnimY();
 
 			float a = 255.0f;
 			float al = getAlpha() / 255.0f;
@@ -151,33 +142,54 @@ public class HUD extends Module {
 			if (mode.getValue() == Mode1.Left) {
 				x1 = x - 5;
 				x2 = x + font1.getStringWidth(name);
-				x3 = x - 8;
+				x3 = x - (5 + linewide.getValue().floatValue());
 				x4 = x - 5;
 				x5 = x - 2;
 			} else if (mode.getValue() == Mode1.Right) {
-				x1 = x - 8;
-				x2 = x + font1.getStringWidth(name) - 3;
-				x3 = x + font1.getStringWidth(name) - 3;
+				x1 = x - (5 + linewide.getValue().floatValue());
+				x2 = x + font1.getStringWidth(name) - linewide.getValue().floatValue();
+				x3 = x + font1.getStringWidth(name) - linewide.getValue().floatValue();
 				x4 = x + font1.getStringWidth(name);
-				x5 = x - 5;
+				x5 = x - (3 + linewide.getValue().floatValue());
 			} else if (mode.getValue() == Mode1.None || mode.getValue() == Mode1.OutLine) {
+				if (mode.getValue() == Mode1.OutLine) {
+					x -= linewide.getValue().floatValue();
+				}
 				x1 = x - 5;
 				x2 = x + font1.getStringWidth(name);
 				x5 = x - 2;
 				a = 0.0f;
 			}
-			if (m.getAnimX() > -1) {
-				Gui.drawRect(x1, y, x2, y + 10, new Color(0, 0, 0, al).getRGB());
+			if (m.getAnimX() > -1024) {
+				Gui.drawRect(x1, y, x2, y + y1, new Color(0, 0, 0, al).getRGB());
 				if (!(mode.getValue() == Mode1.None) && !(mode.getValue() == Mode1.OutLine)) {
-					Gui.drawRect(x3, y, x4, y + 10, new Color(red, green, blue).getRGB());
-				}else if(mode.getValue() == Mode1.OutLine){
-
+					Gui.drawRect(x3, y, x4, y + y1, new Color(red, green, blue).getRGB());
+				} else if (mode.getValue() == Mode1.OutLine) {
+					Gui.drawRect(x - (5 + linewide.getValue().floatValue()), y, x - 5, y + y1, new Color(red, green, blue).getRGB());
+					Gui.drawRect(x + font1.getStringWidth(name) + linewide.getValue().floatValue(), y, x + font1.getStringWidth(name), y + y1, new Color(red, green, blue).getRGB());
+					if (y > lasty) {
+						if (lastx < (x - (5 + linewide.getValue().floatValue()))) {
+							Gui.drawRect(lastx, y - linewide.getValue().floatValue(), x - 5, y, new Color(red, green, blue).getRGB());
+						} else {
+							Gui.drawRect(lastx + linewide.getValue().floatValue(), y, x - (5 + linewide.getValue().floatValue()), y + linewide.getValue().floatValue(), new Color(red, green, blue).getRGB());
+						}
+						Gui.drawRect(lastx + (5 + 2 * linewide.getValue().floatValue()) + lastlenth, y - linewide.getValue().floatValue(), x + font1.getStringWidth(name), y, new Color(red, green, blue).getRGB());
+					} else {
+						Gui.drawRect(lastx, lasty + 12, x + font1.getStringWidth(name) + linewide.getValue().floatValue(), lasty + 12 - linewide.getValue().floatValue(), new Color(red, green, blue).getRGB());
+						Gui.drawRect(x - (5 + linewide.getValue().floatValue()), y, x + font1.getStringWidth(name) + linewide.getValue().floatValue(), y - linewide.getValue().floatValue(), new Color(red, green, blue).getRGB());
+					}
+					lasty1 = y;
+					lasty = y + linewide.getValue().floatValue();
+					lastx = x - (5 + linewide.getValue().floatValue());
+					lastlenth = font1.getStringWidth(name);
 				}
-				font1.drawString(name, x5, y + 3, new Color(red, green, blue).getRGB());
+				font1.drawString(name, x5, y + (12 - font1.getStringHeight(name)) / 2 + 1.0f, new Color(red, green, blue).getRGB());
 				//font1.drawStringWithShadow(name, x5, y + 3, new Color(red, green, blue).getRGB());
 				y += y1;
+
 			}
 		}
+		lasty1 = 2.5f;
 		this.drawPotionStatus(new ScaledResolution(mc));
 	}
 

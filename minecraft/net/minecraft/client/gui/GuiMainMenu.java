@@ -1,17 +1,6 @@
 package net.minecraft.client.gui;
 
-import yoUNP.Client;
-import yoUNP.ui.login.GuiAltManager;
 import com.google.common.collect.Lists;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URI;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -33,6 +22,20 @@ import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLContext;
 import org.lwjgl.util.glu.Project;
+import yoUNP.Client;
+import yoUNP.ui.login.GuiAltManager;
+import yoUNP.utils.render.RenderUtil;
+
+import java.awt.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URI;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
 {
@@ -540,12 +543,9 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
         GlStateManager.scale(f, f, f);
         this.drawCenteredString(this.fontRendererObj, this.splashText, 0, -8, -256);
         GlStateManager.popMatrix();
-        String s = "Minecraft 1.8.8";
+        String s = Client.name + " " + Client.version;
 
-        if (this.mc.isDemo())
-        {
-            s = s + " Demo";
-        }
+        Gui.drawRect(0, 0, RenderUtil.width(), RenderUtil.height(), new Color(43, 43, 43).getRGB());
 
         this.drawString(this.fontRendererObj, s, 2, this.height - 10, -1);
         String s1 =Client.thx;

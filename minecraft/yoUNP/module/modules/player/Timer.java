@@ -8,10 +8,6 @@ import yoUNP.api.events.world.EventPreUpdate;
 import yoUNP.api.value.Numbers;
 import yoUNP.module.Module;
 import yoUNP.module.ModuleType;
-import yoUNP.utils.TimerUtil;
-import java.awt.Color;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 
 public class Timer
 extends Module {
@@ -24,7 +20,8 @@ extends Module {
 
     @EventHandler
     public void onUpdate(EventPreUpdate event) {
-        this.mc.timer.timerSpeed = timer.getValue().intValue();;
+        this.mc.timer.timerSpeed = timer.getValue().floatValue();
+        ;
     }
 
     @Override

@@ -3,36 +3,25 @@
  */
 package yoUNP.module.modules.combat;
 
+import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemPotion;
+import net.minecraft.item.ItemSkull;
+import net.minecraft.item.ItemSoup;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.play.client.C09PacketHeldItemChange;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
 import yoUNP.api.EventHandler;
 import yoUNP.api.events.world.EventPostUpdate;
 import yoUNP.api.events.world.EventPreUpdate;
 import yoUNP.api.value.Mode;
 import yoUNP.api.value.Numbers;
 import yoUNP.api.value.Option;
-import yoUNP.api.value.Value;
 import yoUNP.module.Module;
 import yoUNP.module.ModuleType;
 import yoUNP.utils.TimerUtil;
-import java.awt.Color;
-import java.util.List;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.multiplayer.PlayerControllerMP;
-import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.client.network.NetHandlerPlayClient;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.Slot;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemPotion;
-import net.minecraft.item.ItemSoup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.Packet;
-import net.minecraft.network.play.client.C09PacketHeldItemChange;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionEffect;
-import net.minecraft.world.World;
+
+import java.awt.*;
 
 public class AutoHeal
 extends Module {
@@ -53,8 +42,10 @@ extends Module {
 
     @EventHandler
     private void onUpdate(EventPreUpdate e) {
+        this.setSuffix(this.mode.getValue());
         if (this.timer.hasReached(this.delay.getValue()) && (double)this.mc.thePlayer.getHealth() <= this.health.getValue() * 2.0) {
             this.slot = this.mode.getValue() == HealMode.Potion ? this.getPotionSlot() : (this.mode.getValue() == HealMode.Soup ? this.getSoupSlot() : this.getPotionSlot());
+            this.slot = this.mode.getValue() == HealMode.Potion ? this.getPotionSlot() : (this.mode.getValue() == HealMode.Head ? this.getHeadSlot() : this.getHeadSlot());
             boolean bl = this.isUsing = this.slot != -1 && (this.jump.getValue() == false || this.mc.thePlayer.onGround);
             if (this.isUsing) {
                 this.timer.reset();
@@ -120,12 +111,23 @@ extends Module {
         return slot;
     }
 
+    private int getHeadSlot() {
+        int slot = -1;
+        for (Slot s : this.mc.thePlayer.inventoryContainer.inventorySlots) {
+            ItemStack is;
+            if (!s.getHasStack() || !((is = s.getStack()).getItem() instanceof ItemSkull)) continue;
+            slot = s.slotNumber;
+            break;
+        }
+        return slot;
+    }
+
     private int getPotionCount() {
         int count = 0;
         for (Slot s : this.mc.thePlayer.inventoryContainer.inventorySlots) {
             ItemStack is;
             if (!s.getHasStack() || !((is = s.getStack()).getItem() instanceof ItemPotion)) continue;
-            ItemPotion ip = (ItemPotion)is.getItem();
+            ItemPotion ip = (ItemPotion) is.getItem();
             if (!ItemPotion.isSplash(is.getMetadata())) continue;
             boolean hasHealing = false;
             for (PotionEffect pe : ip.getEffects(is)) {
@@ -150,8 +152,11 @@ extends Module {
     }
 
     static enum HealMode {
+
         Potion,
+        Head,
         Soup;
+
     }
 
 }

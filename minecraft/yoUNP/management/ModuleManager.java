@@ -6,6 +6,8 @@
  */
 package yoUNP.management;
 
+import net.minecraft.client.renderer.GlStateManager;
+import org.lwjgl.input.Keyboard;
 import yoUNP.api.EventBus;
 import yoUNP.api.EventHandler;
 import yoUNP.api.events.misc.EventKey;
@@ -15,68 +17,19 @@ import yoUNP.api.value.Mode;
 import yoUNP.api.value.Numbers;
 import yoUNP.api.value.Option;
 import yoUNP.api.value.Value;
-import yoUNP.management.FileManager;
-import yoUNP.management.Manager;
 import yoUNP.module.Module;
 import yoUNP.module.ModuleType;
-import yoUNP.module.modules.combat.AntiBot;
-import yoUNP.module.modules.combat.AutoHeal;
-import yoUNP.module.modules.combat.AutoSword;
-import yoUNP.module.modules.combat.BowAimBot;
-import yoUNP.module.modules.combat.Criticals;
-import yoUNP.module.modules.combat.FastBow;
-import yoUNP.module.modules.combat.Killaura;
-import yoUNP.module.modules.combat.Regen;
-import yoUNP.module.modules.combat.TPAura;
-import yoUNP.module.modules.movement.Flight;
-import yoUNP.module.modules.movement.InvMove;
-import yoUNP.module.modules.movement.Jesus;
-import yoUNP.module.modules.movement.Longjump;
-import yoUNP.module.modules.movement.NoSlow;
-import yoUNP.module.modules.movement.Speed;
-import yoUNP.module.modules.movement.Sprint;
-import yoUNP.module.modules.movement.Step;
-import yoUNP.module.modules.movement.Teleport;
-import yoUNP.module.modules.player.Blink;
-import yoUNP.module.modules.player.FastUse;
-import yoUNP.module.modules.player.Freecam;
-import yoUNP.module.modules.player.InvCleaner;
-import yoUNP.module.modules.player.MCF;
-import yoUNP.module.modules.player.NoFall;
-import yoUNP.module.modules.player.Teams;
-import yoUNP.module.modules.player.Timer;
-import yoUNP.module.modules.player.Velocity;
-import yoUNP.module.modules.player.Zoot;
-import yoUNP.module.modules.render.Animations;
-import yoUNP.module.modules.render.BlockOverlay;
-import yoUNP.module.modules.render.Chams;
-import yoUNP.module.modules.render.ChestESP;
-import yoUNP.module.modules.render.ClickGui;
-import yoUNP.module.modules.render.ESP;
-import yoUNP.module.modules.render.EveryThingBlock;
-import yoUNP.module.modules.render.FullBright;
-import yoUNP.module.modules.render.HUD;
-import yoUNP.module.modules.render.Nametags;
-import yoUNP.module.modules.render.NoRotate;
-import yoUNP.module.modules.render.Tracers;
-import yoUNP.module.modules.render.Xray;
-import yoUNP.module.modules.world.AntiVoid;
-import yoUNP.module.modules.world.AutoArmor;
-import yoUNP.module.modules.world.ChestStealer;
-import yoUNP.module.modules.world.FastPlace;
-import yoUNP.module.modules.world.PacketMotior;
-import yoUNP.module.modules.world.Phase;
-import yoUNP.module.modules.world.PingSpoof;
-import yoUNP.module.modules.world.SafeWalk;
-import yoUNP.module.modules.world.Scaffold;
+import yoUNP.module.modules.combat.*;
+import yoUNP.module.modules.movement.*;
+import yoUNP.module.modules.player.*;
+import yoUNP.module.modules.render.*;
+import yoUNP.module.modules.world.*;
 import yoUNP.utils.render.gl.GLUtils;
-import java.nio.Buffer;
+
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.client.renderer.GlStateManager;
-import org.lwjgl.input.Keyboard;
 
 public class ModuleManager
 implements Manager {
@@ -135,6 +88,7 @@ implements Manager {
         modules.add(new HUD());
         modules.add(new Nametags());
         modules.add(new NoRotate());
+        modules.add(new TargetHUD());
         modules.add(new Tracers());
         modules.add(new Xray());
 

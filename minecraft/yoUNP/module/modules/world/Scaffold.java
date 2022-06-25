@@ -1,5 +1,16 @@
 package yoUNP.module.modules.world;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockAir;
+import net.minecraft.client.Minecraft;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.play.client.C09PacketHeldItemChange;
+import net.minecraft.network.play.client.C0APacketAnimation;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Vec3;
 import yoUNP.Client;
 import yoUNP.api.EventHandler;
 import yoUNP.api.events.world.EventPostUpdate;
@@ -10,35 +21,30 @@ import yoUNP.module.Module;
 import yoUNP.module.ModuleType;
 import yoUNP.utils.Helper;
 import yoUNP.utils.math.RotationUtil;
-import java.awt.Color;
+
+import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockAir;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.play.client.C09PacketHeldItemChange;
-import net.minecraft.network.play.client.C0APacketAnimation;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.Vec3;
 
 public class Scaffold extends Module {
-   private Option tower = new Option("Tower", "tower", Boolean.valueOf(true));
-   private Option silent = new Option("Silent", "Silent", Boolean.valueOf(true));
-   private Option sprint = new Option("Sprint", "sprint", Boolean.valueOf(false));
-   private List invalid;
-   private BlockCache blockCache;
-   private int currentItem;
-   float t1;
-   float t2;
+
+    int blocktemp = 0;
+    private Option tower = new Option("Tower", "tower", Boolean.valueOf(true));
+    private Option silent = new Option("Silent", "Silent", Boolean.valueOf(true));
+    private Option sprint = new Option("Sprint", "sprint", Boolean.valueOf(false));
+    private Option swing = new Option("Swing", "swing", Boolean.valueOf(true));
+    private List invalid;
+    private BlockCache blockCache;
+    private int currentItem;
+    float t1;
+    float t2;
+    private Option good = new Option("Good", "good", Boolean.valueOf(false));
 
    public Scaffold() {
       super("Scaffold", new String[]{"magiccarpet", "blockplacer", "airwalk"}, ModuleType.World);
-      this.invalid = Arrays.asList(new Block[]{Blocks.air, Blocks.water, Blocks.fire, Blocks.flowing_water, Blocks.lava, Blocks.flowing_lava, Blocks.chest, Blocks.enchanting_table, Blocks.tnt});
-      this.addValues(new Value[]{this.tower, this.silent, this.sprint});
-      this.currentItem = 0;
+       this.invalid = Arrays.asList(new Block[]{Blocks.air, Blocks.water, Blocks.fire, Blocks.flowing_water, Blocks.lava, Blocks.flowing_lava, Blocks.chest, Blocks.enchanting_table, Blocks.tnt});
+       this.addValues(new Value[]{this.tower, this.swing, this.silent, this.sprint, this.good});
+       this.currentItem = 0;
       this.setColor((new Color(244, 119, 194)).getRGB());
    }
 
@@ -87,8 +93,8 @@ public class Scaffold extends Module {
             this.mc.thePlayer.jump();
          }
 
-         int currentSlot = this.mc.thePlayer.inventory.currentItem;
-         int slot = this.grabBlockSlot();
+          int currentSlot = this.mc.thePlayer.inventory.currentItem;
+          int slot = this.grabBlockSlotPlace();
          this.mc.thePlayer.inventory.currentItem = slot;
          if(this.placeBlock(BlockCache.access$2(this.blockCache), BlockCache.access$3(this.blockCache))) {
             if(((Boolean)this.silent.getValue()).booleanValue()) {
@@ -173,16 +179,36 @@ public class Scaffold extends Module {
 
    }
 
-   private int grabBlockSlot() {
-      for(int i = 0; i < 9; ++i) {
-         ItemStack itemStack = this.mc.thePlayer.inventory.mainInventory[i];
-         if(itemStack != null && itemStack.getItem() instanceof ItemBlock) {
-            return i;
-         }
-      }
+    private int grabBlockSlot() {
+        for (int i = 0; i < 9; ++i) {
+            ItemStack itemStack = this.mc.thePlayer.inventory.mainInventory[i];
+            if (itemStack != null && itemStack.getItem() instanceof ItemBlock) {
+                return i;
+            }
+        }
 
-      return -1;
-   }
+        return -1;
+    }
+
+    private int grabBlockSlotPlace() {
+        for (int i = 0; i < 9; ++i) {
+            blocktemp = blocktemp + 1 < 9 ? blocktemp + 1 : blocktemp - 8;
+            int t = blocktemp;
+            if (!((Boolean) this.good.getValue()).booleanValue()) {
+                t = i;
+            }
+            ItemStack itemStack = this.mc.thePlayer.inventory.mainInventory[t];
+            if (itemStack != null && itemStack.getItem() instanceof ItemBlock) {
+                blocktemp = t;
+                if (((Boolean) this.swing.getValue()).booleanValue()) {
+                    Minecraft.thePlayer.swingItem();
+                }
+                return t;
+            }
+        }
+
+        return -1;
+    }
 }
 
 class BlockCache {

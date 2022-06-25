@@ -3,6 +3,7 @@
  */
 package yoUNP;
 
+import net.minecraft.util.ResourceLocation;
 import yoUNP.api.value.Value;
 import yoUNP.management.CommandManager;
 import yoUNP.management.FileManager;
@@ -10,14 +11,10 @@ import yoUNP.management.FriendManager;
 import yoUNP.management.ModuleManager;
 import yoUNP.module.Module;
 import yoUNP.ui.login.AltManager;
-import java.io.PrintStream;
-import java.time.OffsetDateTime;
-import java.util.List;
-import net.minecraft.util.ResourceLocation;
 
 public class Client {
     public final static String name = "yoUNP Alpha";
-    public final static double version = 1.0;
+    public final static double version = 1.1;
     public final static String thx = "Thanks qianxia's help.";
     public static boolean publicMode = false;
     public static Client instance = new Client();

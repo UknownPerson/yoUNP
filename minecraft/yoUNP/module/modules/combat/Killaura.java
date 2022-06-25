@@ -3,6 +3,21 @@
  */
 package yoUNP.module.modules.combat;
 
+import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.passive.EntityAnimal;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemSword;
+import net.minecraft.network.play.client.C02PacketUseEntity;
+import net.minecraft.network.play.client.C07PacketPlayerDigging;
+import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
+import net.minecraft.network.play.client.C0APacketAnimation;
+import net.minecraft.potion.Potion;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
 import yoUNP.Client;
 import yoUNP.api.EventHandler;
 import yoUNP.api.events.world.EventPacketSend;
@@ -11,62 +26,26 @@ import yoUNP.api.events.world.EventPreUpdate;
 import yoUNP.api.value.Mode;
 import yoUNP.api.value.Numbers;
 import yoUNP.api.value.Option;
-import yoUNP.api.value.Value;
 import yoUNP.management.FriendManager;
-import yoUNP.management.ModuleManager;
 import yoUNP.module.Module;
 import yoUNP.module.ModuleType;
-import yoUNP.module.modules.combat.AntiBot;
-import yoUNP.module.modules.combat.AutoHeal;
-import yoUNP.module.modules.combat.Criticals;
 import yoUNP.module.modules.movement.Speed;
 import yoUNP.module.modules.player.Teams;
 import yoUNP.utils.Helper;
 import yoUNP.utils.TimerUtil;
 import yoUNP.utils.math.MathUtil;
 import yoUNP.utils.math.RotationUtil;
-import java.awt.Color;
+
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.multiplayer.PlayerControllerMP;
-import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.client.network.NetHandlerPlayClient;
-import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.client.settings.GameSettings;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.EnumCreatureAttribute;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.passive.EntityAnimal;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemSword;
-import net.minecraft.network.Packet;
-import net.minecraft.network.play.client.C02PacketUseEntity;
-import net.minecraft.network.play.client.C07PacketPlayerDigging;
-import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
-import net.minecraft.network.play.client.C0APacketAnimation;
-import net.minecraft.potion.Potion;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.world.World;
 
 public class Killaura
 extends Module {
     private TimerUtil timer = new TimerUtil();
-    public static Entity target;
+    public static EntityLivingBase target;
     private List targets = new ArrayList(0);
     private int index;
     private int xd;
@@ -157,7 +136,7 @@ extends Module {
             if (this.index >= this.targets.size()) {
                 this.index = 0;
             }
-            this.target = (Entity)this.targets.get(this.index);
+            this.target = (EntityLivingBase) this.targets.get(this.index);
             if (!(Helper.onServer("invaded") || Helper.onServer("minemen") || Helper.onServer("faithful"))) {
                float t1 =RotationUtil.faceTarget(this.target, 1000.0f, 1000.0f, false)[0];
                 float t2=RotationUtil.faceTarget(this.target, 1000.0f, 1000.0f, false)[1];
