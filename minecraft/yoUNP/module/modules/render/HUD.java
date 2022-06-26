@@ -42,6 +42,9 @@ public class HUD extends Module {
 	float lastx;
 	float lasty;
 	float lasty1 = 2.5f;
+	float lasty1t = 2.5f;
+
+	float lastlenth = 0;
 
 	public HUD() {
 		super("HUD", new String[]{"gui"}, ModuleType.Render);
@@ -76,22 +79,24 @@ public class HUD extends Module {
 			sorted.add(m);
 		}
 
-		if(suffix.getValue()) {
+		if (suffix.getValue()) {
 			sorted.sort((o1,
-			o2) -> font1.getStringWidth(
+						 o2) -> font1.getStringWidth(
 					o2.getSuffix().isEmpty() ? o2.getName() : String.format("%s %s", o2.getName(), o2.getSuffix()))
 					- font1.getStringWidth(o1.getSuffix().isEmpty() ? o1.getName()
-							: String.format("%s %s", o1.getName(), o1.getSuffix())));
-		}else {
-			sorted.sort((o1, o2) -> font1.getStringWidth(o2.getName()) - font1.getStringWidth( o1.getName()));
+					: String.format("%s %s", o1.getName(), o1.getSuffix())));
+		} else {
+			sorted.sort((o1, o2) -> font1.getStringWidth(o2.getName()) - font1.getStringWidth(o1.getName()));
 		}
 		y = 5;
-		float lastlenth = 0;
+		if (mode.getValue() == Mode1.OutLine) {
+			y += linewide.getValue().floatValue();
+		}
 		for (Module m : sorted) {
-			if(suffix.getValue()) {
+			if (suffix.getValue()) {
 				name = m.getSuffix().isEmpty() ? m.getName() : String.format("%s %s", m.getName(), m.getSuffix());
-			}else {
-				name =m.getName();
+			} else {
+				name = m.getName();
 			}
 			ping = mc.getNetHandler().getPlayerInfo(Minecraft.thePlayer.getUniqueID()).getResponseTime();
 			if (this.rainbow.getValue()) {
@@ -104,8 +109,8 @@ public class HUD extends Module {
 				blue = getBlue() / 255.0f;
 			}
 
-			float speedx=Math.abs(m.getAnimX() - font1.getStringWidth(name))/20;
-			float speedx1 = (speedx <0.05f ? 0.05f : speedx)*1.5f;
+			float speedx = Math.abs(m.getAnimX() - font1.getStringWidth(name)) / 20;
+			float speedx1 = (speedx < 0.01f ? 0.01f : speedx) * 1.5f;
 			if (m.getAnimX() < font1.getStringWidth(name) && m.isEnabled()) {
 				m.setAnimX(m.getAnimX() + speedx);
 			}
@@ -113,14 +118,14 @@ public class HUD extends Module {
 				m.setAnimX(m.getAnimX() - speedx1);
 			}
 			if (m.getAnimX() > font1.getStringWidth(name) && m.isEnabled()) {
-				m.setAnimX(font1.getStringWidth(name));
+				m.setAnimX(m.getAnimX() - speedx1);
 			}
 
 
 			if (m.getAnimY() < 12 && m.isEnabled()) {
 				m.setAnimY(m.getAnimY() + 0.3f);
 			}
-			if (m.getAnimY() != 0 && !m.isEnabled() && m.getAnimX() < font1.getStringWidth(name) / 2) {
+			if (m.getAnimY() != 0 && !m.isEnabled() && m.getAnimX() < font1.getStringWidth(name) * 0.618) {
 				m.setAnimY(m.getAnimY() - 0.3f);
 			}
 			if (m.getAnimY() > 12 && m.isEnabled()) {
@@ -129,10 +134,11 @@ public class HUD extends Module {
 			if (m.getAnimY() < 0 && !m.isEnabled()) {
 				m.setAnimY(0);
 			}
+
 			x = RenderUtil.width() - m.getAnimX() - 2.5f;
+
 			float y1 = m.getAnimY();
 
-			float a = 255.0f;
 			float al = getAlpha() / 255.0f;
 			float x1 = 0; // 大 起点x
 			float x2 = 0; // 大 终点x
@@ -158,7 +164,6 @@ public class HUD extends Module {
 				x1 = x - 5;
 				x2 = x + font1.getStringWidth(name);
 				x5 = x - 2;
-				a = 0.0f;
 			}
 			if (m.getAnimX() > -1024) {
 				Gui.drawRect(x1, y, x2, y + y1, new Color(0, 0, 0, al).getRGB());
@@ -167,23 +172,49 @@ public class HUD extends Module {
 				} else if (mode.getValue() == Mode1.OutLine) {
 					Gui.drawRect(x - (5 + linewide.getValue().floatValue()), y, x - 5, y + y1, new Color(red, green, blue).getRGB());
 					Gui.drawRect(x + font1.getStringWidth(name) + linewide.getValue().floatValue(), y, x + font1.getStringWidth(name), y + y1, new Color(red, green, blue).getRGB());
-					if (y > lasty) {
-						if (lastx < (x - (5 + linewide.getValue().floatValue()))) {
-							Gui.drawRect(lastx, y - linewide.getValue().floatValue(), x - 5, y, new Color(red, green, blue).getRGB());
-						} else {
-							Gui.drawRect(lastx + linewide.getValue().floatValue(), y, x - (5 + linewide.getValue().floatValue()), y + linewide.getValue().floatValue(), new Color(red, green, blue).getRGB());
-						}
-						Gui.drawRect(lastx + (5 + 2 * linewide.getValue().floatValue()) + lastlenth, y - linewide.getValue().floatValue(), x + font1.getStringWidth(name), y, new Color(red, green, blue).getRGB());
+					if (lastlenth <= font1.getStringWidth(name)) {
+						Gui.drawRect(lastx, lasty + lasty1t, lastx + lastlenth + 5 + 2 * linewide.getValue().floatValue(), lasty + lasty1t - linewide.getValue().floatValue(), new Color(red, green, blue).getRGB());
+						Gui.drawRect(x - 5 - linewide.getValue().floatValue(), y, x + font1.getStringWidth(name) + linewide.getValue().floatValue(), y - linewide.getValue().floatValue(), new Color(red, green, blue).getRGB());
 					} else {
-						Gui.drawRect(lastx, lasty + 12, x + font1.getStringWidth(name) + linewide.getValue().floatValue(), lasty + 12 - linewide.getValue().floatValue(), new Color(red, green, blue).getRGB());
-						Gui.drawRect(x - (5 + linewide.getValue().floatValue()), y, x + font1.getStringWidth(name) + linewide.getValue().floatValue(), y - linewide.getValue().floatValue(), new Color(red, green, blue).getRGB());
+						if (lastx < (x - 5 - linewide.getValue().floatValue())) {
+							if ((x - (5 + linewide.getValue().floatValue())) < (lastx + 5 + lastlenth + 2 * linewide.getValue().floatValue())) {
+								Gui.drawRect(lastx, y, x - (5 + linewide.getValue().floatValue()), y + linewide.getValue().floatValue(), new Color(red, green, blue).getRGB());
+							}
+							if ((x - (5 + linewide.getValue().floatValue())) < (lastx + 5 + lastlenth + 2 * linewide.getValue().floatValue())) {
+								if ((x + font1.getStringWidth(name) + linewide.getValue().floatValue()) > (lastx + lastlenth + 5 + 2 * linewide.getValue().floatValue())) {
+									Gui.drawRect(lastx + (5 + 2 * linewide.getValue().floatValue()) + lastlenth, y, x + font1.getStringWidth(name) + linewide.getValue().floatValue(), y - linewide.getValue().floatValue(), new Color(red, green, blue).getRGB());
+								}
+							}
+						} else {
+							if (lastx > (x - (5 + linewide.getValue().floatValue()))) {
+								if ((x + font1.getStringWidth(name) + linewide.getValue().floatValue()) > lastx) {
+									Gui.drawRect(x - 5 - linewide.getValue().floatValue(), y - linewide.getValue().floatValue(), lastx, y, new Color(red, green, blue).getRGB());
+								}
+							}
+						}
+
+						if ((x - 5 - linewide.getValue().floatValue()) > (lastx + 2 * linewide.getValue().floatValue() + lastlenth + 5)) {
+							Gui.drawRect(lastx + 2 * linewide.getValue().floatValue() + lastlenth + 5, y, x, y - linewide.getValue().floatValue(), new Color(red, green, blue).getRGB());
+							Gui.drawRect(lastx + 2 * linewide.getValue().floatValue() + lastlenth + 5, y, lastx, y + linewide.getValue().floatValue(), new Color(red, green, blue).getRGB());
+						}
+						if ((x + linewide.getValue().floatValue() + font1.getStringWidth(name)) < lastx) {
+							Gui.drawRect(x + linewide.getValue().floatValue() + font1.getStringWidth(name), y, x - 5 - linewide.getValue().floatValue(), y - linewide.getValue().floatValue(), new Color(red, green, blue).getRGB());
+						}
+
+						if ((x + font1.getStringWidth(name) + linewide.getValue().floatValue()) < (lastx + lastlenth + 5 + 2 * linewide.getValue().floatValue())) {
+							Gui.drawRect(lastx + (5 + 2 * linewide.getValue().floatValue()) + lastlenth, y + linewide.getValue().floatValue(), x + font1.getStringWidth(name), y, new Color(red, green, blue).getRGB());
+						}
+						if (lasty1 == y) {
+							Gui.drawRect(x - 5 - linewide.getValue().floatValue(), y, x + font1.getStringWidth(name) + linewide.getValue().floatValue(), y - linewide.getValue().floatValue(), new Color(red, green, blue).getRGB());
+						}
 					}
 					lasty1 = y;
 					lasty = y + linewide.getValue().floatValue();
+					lasty1t = y1;
 					lastx = x - (5 + linewide.getValue().floatValue());
 					lastlenth = font1.getStringWidth(name);
 				}
-				font1.drawString(name, x5, y + (12 - font1.getStringHeight(name)) / 2 + 1.0f, new Color(red, green, blue).getRGB());
+				font1.drawString(name, x5, y + (y1 - font1.getStringHeight(name)) / 2 + 1.0f, new Color(red, green, blue).getRGB());
 				//font1.drawStringWithShadow(name, x5, y + 3, new Color(red, green, blue).getRGB());
 				y += y1;
 

@@ -14,7 +14,7 @@ import yoUNP.ui.login.AltManager;
 
 public class Client {
     public final static String name = "yoUNP Alpha";
-    public final static double version = 1.1;
+    public final static String version = "1.1.1";
     public final static String thx = "Thanks qianxia's help.";
     public static boolean publicMode = false;
     public static Client instance = new Client();
