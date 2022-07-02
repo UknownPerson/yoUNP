@@ -57,14 +57,15 @@ extends Module {
     private Option<Boolean> animals = new Option<Boolean>("Animals", "animals", true);
     private Option<Boolean> mobs = new Option<Boolean>("Mobs", "mobs", false);
     private Option<Boolean> invis = new Option<Boolean>("Invisibles", "invisibles", false);
-    private Mode<Enum> mode = new Mode("Mode", "mode", (Enum[])AuraMode.values(), (Enum)AuraMode.Switch);
+    private Option<Boolean> lockView = new Option<Boolean>("Lockview", "lockview", false);
+    private Mode<Enum> mode = new Mode("Mode", "mode", (Enum[]) AuraMode.values(), (Enum) AuraMode.Switch);
     private boolean isBlocking;
     private Comparator<Entity> angleComparator = Comparator.comparingDouble(e2 -> RotationUtil.getRotations(e2)[0]);
 
     public Killaura() {
         super("KillAura", new String[]{"ka", "aura", "killa"}, ModuleType.Combat);
         this.setColor(new Color(226, 54, 30).getRGB());
-        this.addValues(this.aps, this.reach, this.blocking, this.players, this.animals, this.mobs, this.invis ,this.mode);
+        this.addValues(this.aps, this.reach, this.blocking, this.players, this.animals, this.mobs, this.invis, this.lockView, this.mode);
     }
 
     @Override
@@ -138,11 +139,17 @@ extends Module {
             }
             this.target = (EntityLivingBase) this.targets.get(this.index);
             if (!(Helper.onServer("invaded") || Helper.onServer("minemen") || Helper.onServer("faithful"))) {
-               float t1 =RotationUtil.faceTarget(this.target, 1000.0f, 1000.0f, false)[0];
-                float t2=RotationUtil.faceTarget(this.target, 1000.0f, 1000.0f, false)[1];
-               event.setYaw(t1);
-                Client.setRotation(t1,t2);
+                float t1 = RotationUtil.faceTarget(this.target, 1000.0f, 1000.0f, false)[0];
+                float t2 = RotationUtil.faceTarget(this.target, 1000.0f, 1000.0f, false)[1];
+                if (this.lockView.getValue().booleanValue()) {
+                    this.mc.thePlayer.rotationYaw = t1;
+                }
+                event.setYaw(t1);
+                Client.setRotation(t1, t2);
                 if (!AutoHeal.currentlyPotting) {
+                    if (this.lockView.getValue().booleanValue()) {
+                        this.mc.thePlayer.rotationPitch = t2;
+                    }
                     event.setPitch(t2);
                 }
             }

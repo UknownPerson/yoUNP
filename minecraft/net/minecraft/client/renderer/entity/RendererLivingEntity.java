@@ -1,30 +1,14 @@
 package net.minecraft.client.renderer.entity;
 
-import yoUNP.Client;
-import yoUNP.module.modules.combat.Killaura;
-import yoUNP.module.modules.render.Chams;
-import yoUNP.module.modules.render.ESP;
-import yoUNP.module.modules.render.Nametags;
-import yoUNP.module.modules.world.Scaffold;
-import yoUNP.utils.Helper;
-import yoUNP.utils.render.OutlineUtils;
-import yoUNP.utils.render.RenderUtil;
 import com.google.common.collect.Lists;
-import java.nio.FloatBuffer;
-import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.model.ModelBase;
-import net.minecraft.client.renderer.GLAllocation;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EnumPlayerModelParts;
@@ -34,11 +18,22 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import optifine.Config;
 import optifine.Reflector;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.GL11;
 import shadersmod.client.Shaders;
+import yoUNP.Client;
+import yoUNP.module.modules.combat.Killaura;
+import yoUNP.module.modules.render.Chams;
+import yoUNP.module.modules.render.ESP;
+import yoUNP.module.modules.render.Nametags;
+import yoUNP.module.modules.world.Scaffold;
+import yoUNP.utils.Helper;
+import yoUNP.utils.render.OutlineUtils;
+import yoUNP.utils.render.RenderUtil;
+
+import java.nio.FloatBuffer;
+import java.util.List;
 
 public abstract class RendererLivingEntity<T extends EntityLivingBase> extends Render<T> {
 	private static final Logger logger = LogManager.getLogger();
@@ -50,6 +45,7 @@ public abstract class RendererLivingEntity<T extends EntityLivingBase> extends R
 	private static final String __OBFID = "CL_00001012";
 	public static float NAME_TAG_RANGE = 64.0F;
 	public static float NAME_TAG_RANGE_SNEAK = 32.0F;
+	public static float ft, f1t, f8t;
 
 	public RendererLivingEntity(RenderManager renderManagerIn, ModelBase modelBaseIn, float shadowSizeIn) {
 		super(renderManagerIn);
@@ -123,12 +119,21 @@ public abstract class RendererLivingEntity<T extends EntityLivingBase> extends R
 				// f f1 yaw
 				// f8 pitch
 				if (entity == Minecraft.getMinecraft().thePlayer & Client.fuck) {
-					f = Client.yaw;
-					f1 = Client.yaw;
-					f8 = Client.pitch;
+					f = this.interpolateRotation(ft, Client.yaw, partialTicks / 4);
+					f1 = this.interpolateRotation(f1t, Client.yaw, partialTicks / 4);
+					f8 = f8t + (Client.pitch - f8t) * partialTicks / 4;
 					if ((!Client.instance.getModuleManager().getModuleByClass(Killaura.class).isEnabled()
-							|| Killaura.target == null )&& (!Client.instance.getModuleManager().getModuleByClass(Scaffold.class).isEnabled()))
+							|| Killaura.target == null) && (!Client.instance.getModuleManager().getModuleByClass(Scaffold.class).isEnabled()))
 						Client.fuck = false;
+				} else if (entity == Minecraft.getMinecraft().thePlayer) {
+					f = this.interpolateRotation(ft, entity.renderYawOffset, partialTicks / 4);
+					f1 = this.interpolateRotation(f1t, entity.rotationYawHead, partialTicks / 4);
+					f8 = f8t + (entity.rotationPitch - f8t) * partialTicks / 4;
+				}
+				if (entity == Minecraft.getMinecraft().thePlayer) {
+					ft = f;
+					f1t = f1;
+					f8t = f8;
 				}
 				float f2 = f1 - f;
 				if (this.mainModel.isRiding && entity.ridingEntity instanceof EntityLivingBase) {

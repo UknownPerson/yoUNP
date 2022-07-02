@@ -1,16 +1,12 @@
 
 package yoUNP.module.modules.world;
 
-import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import yoUNP.api.EventHandler;
 import yoUNP.api.events.world.EventPacketSend;
 import yoUNP.api.events.world.EventPreUpdate;
-import yoUNP.management.ModuleManager;
 import yoUNP.module.Module;
 import yoUNP.module.ModuleType;
-import yoUNP.module.modules.movement.Flight;
-import yoUNP.module.modules.movement.Teleport;
 import yoUNP.utils.Helper;
 import yoUNP.utils.TimerUtil;
 
@@ -28,7 +24,8 @@ extends Module {
         if (this.time.delay(1000.0f)) {
             this.setSuffix((Object)("PPS:" + this.packetcount));
             if (this.packetcount > 22) {
-                Helper.sendMessage((String)"您的发包数量不正常!");
+                Helper.sendMessage((String) "您的发包数量不正常!");
+                Helper.sendMessage("Thanks qianxia's help.");
             }
             this.packetcount = 0;
             this.time.reset();
@@ -37,7 +34,7 @@ extends Module {
 
     @EventHandler
     public void Packet(EventPacketSend event) {
-    	if (event.getPacket() instanceof C03PacketPlayer && !ModuleManager.getModuleByClass(Flight.class).isEnabled() && !ModuleManager.getModuleByClass(Teleport.class).isEnabled()) {
+        if (event.getPacket() instanceof C03PacketPlayer) {
             ++this.packetcount;
         }
     }

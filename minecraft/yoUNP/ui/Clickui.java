@@ -2,30 +2,22 @@ package yoUNP.ui;
 
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.util.ResourceLocation;
+import org.lwjgl.input.Mouse;
 import yoUNP.Client;
-import yoUNP.api.EventHandler;
-import yoUNP.api.events.misc.EventKey;
 import yoUNP.api.value.Mode;
 import yoUNP.api.value.Numbers;
 import yoUNP.api.value.Option;
 import yoUNP.api.value.Value;
-import yoUNP.management.ModuleManager;
 import yoUNP.module.Module;
 import yoUNP.module.ModuleType;
-import yoUNP.module.modules.combat.Killaura;
 import yoUNP.module.modules.render.ClickGui;
-import yoUNP.module.modules.render.HUD;
 import yoUNP.ui.font.FontLoaders;
 import yoUNP.utils.RenderUtils;
 import yoUNP.utils.TimerUtil;
 import yoUNP.utils.render.ColorUtils;
 import yoUNP.utils.render.RenderUtil;
 
-import org.lwjgl.input.Mouse;
-
 import java.awt.*;
-import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -38,8 +30,6 @@ public class Clickui extends GuiScreen {
 	public static ModuleType modCategory = ModuleType.Combat;
 	public static float mRole, vRole;
 	public TimerUtil timer = new TimerUtil();
-	public float dragX, dragY;
-	public int keyy = 0;
 
 	@Override
 	public void initGui() {
@@ -48,6 +38,46 @@ public class Clickui extends GuiScreen {
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+
+		float Xt = (RenderUtil.width() / 2 - width / 2);
+		float Yt = (RenderUtil.height() / 2 - height / 2);
+
+
+		float speedx = Math.max((Math.abs(windowX - Xt) / 10), 0.1f);
+		if (windowX < Xt) {
+			windowX += speedx;
+		}
+		if (windowX > Xt) {
+			windowX -= speedx;
+		}
+
+		float speedy = Math.max((Math.abs(windowY - Yt) / 10), 0.1f);
+		if (windowY < Yt) {
+			windowY += speedy;
+		}
+		if (windowY > Yt) {
+			windowY -= speedy;
+		}
+
+
+		float tempx = RenderUtil.width() * 0.618f;
+		float tempy = RenderUtil.height() * 0.618f;
+
+		float speedx2 = Math.max((Math.abs(width - tempx) / 20), 1f);
+		if (width < tempx) {
+			width += speedx2;
+		}
+		if (width > tempx) {
+			width -= speedx2;
+		}
+
+		float speedy2 = Math.max((Math.abs(height - tempy) / 20), 1f);
+		if (height < tempy) {
+			height += speedy2;
+		}
+		if (height > tempy) {
+			height -= speedy2;
+		}
 
 		int dWheel = Mouse.getDWheel();
 		if (isHovered(windowX + 200, windowY + 40, windowX + width, windowY + height, mouseX, mouseY)) {
@@ -67,11 +97,6 @@ public class Clickui extends GuiScreen {
 				mRole += 25;
 			}
 		}
-
-		windowX = (RenderUtil.width() / 2 - width / 2);
-		windowY = (RenderUtil.height() / 2 - height / 2);
-		Clickui.width = (float) (RenderUtil.width() * 0.618);
-		Clickui.height = (float) (RenderUtil.height() * 0.618);
 		// 娑撹崵鐛ユ担锟�
 		// RenderUtils.drawRoundedRect(windowX, windowY, windowX + width, windowY +
 		// height, 5,new Color(255, 0, 0, 255).getRGB());

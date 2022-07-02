@@ -1,4 +1,4 @@
-package yoUNP.module.modules.render;
+	package yoUNP.module.modules.render;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -43,7 +43,6 @@ public class HUD extends Module {
 	float lasty;
 	float lasty1 = 2.5f;
 	float lasty1t = 2.5f;
-
 	float lastlenth = 0;
 
 	public HUD() {
@@ -109,7 +108,7 @@ public class HUD extends Module {
 				blue = getBlue() / 255.0f;
 			}
 
-			float speedx = Math.abs(m.getAnimX() - font1.getStringWidth(name)) / 20;
+			float speedx = Math.abs(m.getAnimX() - font1.getStringWidth(name)) / 15;
 			float speedx1 = (speedx < 0.01f ? 0.01f : speedx) * 1.5f;
 			if (m.getAnimX() < font1.getStringWidth(name) && m.isEnabled()) {
 				m.setAnimX(m.getAnimX() + speedx);
@@ -121,6 +120,13 @@ public class HUD extends Module {
 				m.setAnimX(m.getAnimX() - speedx1);
 			}
 
+			float speedx3 = Math.abs(m.getAnwidth() - RenderUtil.width()) / 15;
+			if (m.getAnwidth() < RenderUtil.width()) {
+				m.setAnwidth(m.getAnwidth() + speedx3);
+			}
+			if (m.getAnwidth() > RenderUtil.width()) {
+				m.setAnwidth(m.getAnwidth() - speedx3);
+			}
 
 			if (m.getAnimY() < 12 && m.isEnabled()) {
 				m.setAnimY(m.getAnimY() + 0.3f);
@@ -135,7 +141,7 @@ public class HUD extends Module {
 				m.setAnimY(0);
 			}
 
-			x = RenderUtil.width() - m.getAnimX() - 2.5f;
+			x = m.getAnwidth() - m.getAnimX() - 2.5f;
 
 			float y1 = m.getAnimY();
 
@@ -204,9 +210,10 @@ public class HUD extends Module {
 						if ((x + font1.getStringWidth(name) + linewide.getValue().floatValue()) < (lastx + lastlenth + 5 + 2 * linewide.getValue().floatValue())) {
 							Gui.drawRect(lastx + (5 + 2 * linewide.getValue().floatValue()) + lastlenth, y + linewide.getValue().floatValue(), x + font1.getStringWidth(name), y, new Color(red, green, blue).getRGB());
 						}
-						if (lasty1 == y) {
-							Gui.drawRect(x - 5 - linewide.getValue().floatValue(), y, x + font1.getStringWidth(name) + linewide.getValue().floatValue(), y - linewide.getValue().floatValue(), new Color(red, green, blue).getRGB());
-						}
+
+					}
+					if (2 * lasty1 == (float) y) {
+						Gui.drawRect(x - 5 - linewide.getValue().floatValue(), y, x + font1.getStringWidth(name) + linewide.getValue().floatValue(), y - linewide.getValue().floatValue(), new Color(red, green, blue).getRGB());
 					}
 					lasty1 = y;
 					lasty = y + linewide.getValue().floatValue();

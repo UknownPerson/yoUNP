@@ -3,24 +3,22 @@
  */
 package yoUNP.utils;
 
-import java.awt.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.culling.Frustum;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Timer;
+import org.lwjgl.opengl.GL11;
 import yoUNP.utils.math.MathUtil;
 
-import org.lwjgl.opengl.GL11;
+import java.awt.*;
 
 
 public class RenderUtils {
@@ -31,7 +29,7 @@ public class RenderUtils {
     }
 
     public static int getRandomRGB(double min, double max, float alpha) {
-        return new Color((float)MathUtil.randomDouble(min, max), (float)MathUtil.randomDouble(min, max), (float)MathUtil.randomDouble(min, max), alpha).getRGB();
+        return new Color((float) MathUtil.randomDouble(min, max), (float) MathUtil.randomDouble(min, max), (float) MathUtil.randomDouble(min, max), alpha).getRGB();
     }
 
     public static int withTransparency(int rgb, float alpha) {
@@ -75,33 +73,33 @@ public class RenderUtils {
 
 
 	public static void drawblock(double a, double a2, double a3, int a4, int a5, float a6) {
-		float a7 = (float) (a4 >> 24 & 255) / 255.0f;
-		float a8 = (float) (a4 >> 16 & 255) / 255.0f;
-		float a9 = (float) (a4 >> 8 & 255) / 255.0f;
-		float a10 = (float) (a4 & 255) / 255.0f;
-		float a11 = (float) (a5 >> 24 & 255) / 255.0f;
-		float a12 = (float) (a5 >> 16 & 255) / 255.0f;
-		float a13 = (float) (a5 >> 8 & 255) / 255.0f;
-		float a14 = (float) (a5 & 255) / 255.0f;
-		org.lwjgl.opengl.GL11.glPushMatrix();
-		org.lwjgl.opengl.GL11.glEnable((int) 3042);
-		org.lwjgl.opengl.GL11.glBlendFunc((int) 770, (int) 771);
-		org.lwjgl.opengl.GL11.glDisable((int) 3553);
-		org.lwjgl.opengl.GL11.glEnable((int) 2848);
-		org.lwjgl.opengl.GL11.glDisable((int) 2929);
-		org.lwjgl.opengl.GL11.glDepthMask((boolean) false);
-		org.lwjgl.opengl.GL11.glColor4f((float) a8, (float) a9, (float) a10, (float) a7);
-		drawOutlinedBoundingBox(new AxisAlignedBB(a, a2, a3, a + 1.0, a2 + 1.0, a3 + 1.0));
-		org.lwjgl.opengl.GL11.glLineWidth((float) a6);
-		org.lwjgl.opengl.GL11.glColor4f((float) a12, (float) a13, (float) a14, (float) a11);
-		drawOutlinedBoundingBox(new AxisAlignedBB(a, a2, a3, a + 1.0, a2 + 1.0, a3 + 1.0));
-		org.lwjgl.opengl.GL11.glDisable((int) 2848);
-		org.lwjgl.opengl.GL11.glEnable((int) 3553);
-		org.lwjgl.opengl.GL11.glEnable((int) 2929);
-		org.lwjgl.opengl.GL11.glDepthMask((boolean) true);
-		org.lwjgl.opengl.GL11.glDisable((int) 3042);
-		org.lwjgl.opengl.GL11.glPopMatrix();
-	}
+        float a7 = (float) (a4 >> 24 & 255) / 255.0f;
+        float a8 = (float) (a4 >> 16 & 255) / 255.0f;
+        float a9 = (float) (a4 >> 8 & 255) / 255.0f;
+        float a10 = (float) (a4 & 255) / 255.0f;
+        float a11 = (float) (a5 >> 24 & 255) / 255.0f;
+        float a12 = (float) (a5 >> 16 & 255) / 255.0f;
+        float a13 = (float) (a5 >> 8 & 255) / 255.0f;
+        float a14 = (float) (a5 & 255) / 255.0f;
+        GL11.glPushMatrix();
+        GL11.glEnable((int) 3042);
+        GL11.glBlendFunc((int) 770, (int) 771);
+        GL11.glDisable((int) 3553);
+        GL11.glEnable((int) 2848);
+        GL11.glDisable((int) 2929);
+        GL11.glDepthMask((boolean) false);
+        GL11.glColor4f((float) a8, (float) a9, (float) a10, (float) a7);
+        drawOutlinedBoundingBox(new AxisAlignedBB(a, a2, a3, a + 1.0, a2 + 1.0, a3 + 1.0));
+        GL11.glLineWidth((float) a6);
+        GL11.glColor4f((float) a12, (float) a13, (float) a14, (float) a11);
+        drawOutlinedBoundingBox(new AxisAlignedBB(a, a2, a3, a + 1.0, a2 + 1.0, a3 + 1.0));
+        GL11.glDisable((int) 2848);
+        GL11.glEnable((int) 3553);
+        GL11.glEnable((int) 2929);
+        GL11.glDepthMask((boolean) true);
+        GL11.glDisable((int) 3042);
+        GL11.glPopMatrix();
+    }
     
     
     public static void pre() {

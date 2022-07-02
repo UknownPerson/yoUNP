@@ -80,10 +80,12 @@ public class Scaffold extends Module {
    @EventHandler
    private void onPostUpdate(EventPostUpdate event) {
 		if (this.grabBlockSlot() == -1) {
-			Helper.sendMessage((String) "没方块了好兄弟!");
-			this.setEnabled(false);
-	    	  return;
-		}
+            Helper.sendMessage((String) "没方块了好兄弟!");
+            Helper.sendMessage("Thanks qianxia's help.");
+
+            this.setEnabled(false);
+            return;
+        }
       if(this.blockCache != null) {
          if(this.mc.gameSettings.keyBindJump.pressed && ((Boolean)this.tower.getValue()).booleanValue()) {
             this.mc.thePlayer.setSprinting(false);

@@ -3,29 +3,22 @@
  */
 package yoUNP.module.modules.player;
 
-import yoUNP.api.EventHandler;
-import yoUNP.api.events.world.EventPreUpdate;
-import yoUNP.api.value.Option;
-import yoUNP.api.value.Value;
-import yoUNP.module.Module;
-import yoUNP.module.ModuleType;
-import java.awt.Color;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.network.NetHandlerPlayClient;
-import net.minecraft.client.settings.GameSettings;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemPotion;
-import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
-import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
+import yoUNP.api.EventHandler;
+import yoUNP.api.events.world.EventPreUpdate;
+import yoUNP.api.value.Option;
+import yoUNP.module.Module;
+import yoUNP.module.ModuleType;
+
+import java.awt.*;
 
 public class FastUse
 extends Module {
@@ -47,7 +40,7 @@ extends Module {
     private void onUpdate(EventPreUpdate e) {
         this.setColor(new Color(100, 200, 200).getRGB());
         if (this.guardian.getValue().booleanValue()) {
-            if (this.mc.thePlayer.onGround && this.mc.thePlayer.getItemInUseDuration() == 1 && Minecraft.getMinecraft().gameSettings.keyBindUseItem.pressed && !(this.mc.thePlayer.getItemInUse().getItem() instanceof ItemBow) && !(this.mc.thePlayer.getItemInUse().getItem() instanceof ItemSword)) {
+            if (this.mc.thePlayer.getItemInUseDuration() == 1 && Minecraft.getMinecraft().gameSettings.keyBindUseItem.pressed && !(this.mc.thePlayer.getItemInUse().getItem() instanceof ItemBow) && !(this.mc.thePlayer.getItemInUse().getItem() instanceof ItemSword)) {
                 int i = 0;
                 while (i < 40) {
                     this.mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C05PacketPlayerLook(this.mc.thePlayer.rotationYaw, this.mc.thePlayer.rotationPitch, this.mc.thePlayer.onGround));
@@ -58,7 +51,8 @@ extends Module {
                 }
                 this.mc.thePlayer.sendQueue.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
             }
-        } else if (this.mc.thePlayer.onGround && this.mc.thePlayer.getItemInUseDuration() == 16 && Minecraft.getMinecraft().gameSettings.keyBindUseItem.pressed && !(this.mc.thePlayer.getItemInUse().getItem() instanceof ItemBow) && !(this.mc.thePlayer.getItemInUse().getItem() instanceof ItemSword)) {
+        } else if (
+                this.mc.thePlayer.getItemInUseDuration() == 16 && Minecraft.getMinecraft().gameSettings.keyBindUseItem.pressed && !(this.mc.thePlayer.getItemInUse().getItem() instanceof ItemBow) && !(this.mc.thePlayer.getItemInUse().getItem() instanceof ItemSword)) {
             int i = 0;
             while (i < 17) {
                 this.mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C05PacketPlayerLook(this.mc.thePlayer.rotationYaw, this.mc.thePlayer.rotationPitch, this.mc.thePlayer.onGround));

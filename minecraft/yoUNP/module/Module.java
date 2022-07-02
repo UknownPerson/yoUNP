@@ -14,6 +14,7 @@ import yoUNP.management.FileManager;
 import yoUNP.management.ModuleManager;
 import yoUNP.utils.Helper;
 import yoUNP.utils.math.MathUtil;
+import yoUNP.utils.render.RenderUtil;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -33,7 +34,7 @@ public class Module {
     private boolean removed;
     public static Minecraft mc = Minecraft.getMinecraft();
     public static Random random = new Random();
-    private float anim,animY;
+    private float anim, animY, anwidth = RenderUtil.width();
 
     public Module(String name, String[] alias, ModuleType type) {
         this.name = name;
@@ -188,6 +189,15 @@ public class Module {
             }
         }
     }
+
+    public float getAnwidth() {
+        return this.anwidth;
+    }
+
+    public void setAnwidth(float anim) {
+        this.anwidth = anim;
+    }
+
     public float getAnimX() {
         return this.anim;
     }
